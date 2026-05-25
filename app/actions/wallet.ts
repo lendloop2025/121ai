@@ -1,5 +1,6 @@
 "use server";
 import { z } from "zod";
+import { headers } from "next/headers";
 import Stripe from "stripe";
 import { requireVerified } from "@/lib/auth/session";
 import { writeAuditLog } from "@/lib/audit/log";
@@ -17,6 +18,14 @@ export async function createDepositSessionAction(_prev: any, formData: FormData)
 
   const amountCents = Math.round(parsed.data.amount_eur * 100);
 
+  // Return the user to the exact host they're currently on so the auth session
+  // cookie survives the round-trip through Stripe. Falls back to the configured
+  // app URL if proxy headers are unavailable.
+  const h = await headers();
+  const host = h.get("x-forwarded-host") ?? h.get("host");
+  const proto = h.get("x-forwarded-proto") ?? "https";
+  const origin = host ? `${proto}://${host}` : process.env.NEXT_PUBLIC_APP_URL;
+
   const session = await stripe.checkout.sessions.create({
     mode: "payment",
     payment_method_types: ["card"],
@@ -29,8 +38,8 @@ export async function createDepositSessionAction(_prev: any, formData: FormData)
       },
     }],
     metadata: { user_id: user.id, purpose: "wallet_deposit" },
-    success_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?deposit=success`,
-    cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/deposit?cancelled=1`,
+    success_url: `${origin}/dashboard?deposit=success`,
+    cancel_url: `${origin}/deposit?cancelled=1`,
   });
 
   await writeAuditLog({
