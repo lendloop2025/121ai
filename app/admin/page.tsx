@@ -27,11 +27,12 @@ export default async function AdminOverviewPage() {
 
   return (
     <>
-      {/* Live relationship web — full-bleed backdrop behind the overview.
-          Anchored to the lower portion of the screen and faded at the top so
+      {/* Live relationship web — backdrop behind the overview. Absolutely
+          positioned within the (relative) <main>, so it scrolls with the page
+          content instead of staying pinned to the viewport. Faded at the top so
           the header and metric cards keep a clear, conflict-free zone above
           it. Dimmed and non-interactive. */}
-      <div aria-hidden className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+      <div aria-hidden className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
         <div
           className="absolute left-1/2 -translate-x-1/2 top-[32%] w-full max-w-[1180px] h-[80%] opacity-60"
           style={{
