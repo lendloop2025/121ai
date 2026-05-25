@@ -1,6 +1,6 @@
 import { requireVerified } from "@/lib/auth/session";
 import { createService } from "@/lib/db/client";
-import { formatEur, formatBps } from "@/lib/utils";
+import { formatEur, formatBps, maskName } from "@/lib/utils";
 import { calcMonthlyPayment } from "@/lib/finance/amortization";
 import { Card } from "@/components/ui/card";
 import { ScoreBadge } from "@/components/ui/score-badge";
@@ -43,7 +43,9 @@ export default async function InvestDetailPage({ params }: { params: Promise<{ i
   const incomeCents = assessment?.monthly_income_cents ?? 0;
   const affordabilityPct = incomeCents > 0 ? (monthlyAtMaxApr / incomeCents) * 100 : null;
 
-  const borrowerName = (req as any).users?.first_name ?? "Borrower";
+  const u = (req as any).users;
+  const maskedName = maskName(`${u?.first_name ?? ""} ${u?.last_name ?? ""}`.trim());
+  const borrowerHandle = `${maskedName || "Borrower"} #${String(req.borrower_id).slice(0, 8)}`;
 
   const components = scoreRow ? [
     { label: "Identity", value: scoreRow.identity_score, max: 20 },
@@ -60,7 +62,7 @@ export default async function InvestDetailPage({ params }: { params: Promise<{ i
     <div className="space-y-6">
       <div>
         <div className="text-sm text-[var(--fg-subtle)]">Loan request from</div>
-        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">{borrowerName}</h1>
+        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight tabular">{borrowerHandle}</h1>
       </div>
 
       <div className="grid lg:grid-cols-5 gap-6">

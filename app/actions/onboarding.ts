@@ -84,6 +84,19 @@ export async function confirmTotpAction(_prev: any, formData: FormData) {
   redirect("/onboarding/identity");
 }
 
+export async function skipTwoFactorAction() {
+  const user = await requireUser();
+  const svc = createService();
+
+  // Email is already verified via the NCI link, so 2FA is optional for now —
+  // advance to identity without enabling TOTP.
+  await svc.from("users").update({ status: "pending_identity" }).eq("id", user.id);
+
+  await writeAuditLog({ actor_user_id: user.id, action_type: "auth.2fa.skipped" });
+
+  redirect("/onboarding/identity");
+}
+
 export async function uploadIdentityAction(formData: FormData) {
   const user = await requireUser();
   const supabase = await createServer();
@@ -120,9 +133,11 @@ export async function uploadIdentityAction(formData: FormData) {
     return { error: "Upload failed: " + e.message };
   }
 
+  // Identity is in; the assessment is still outstanding. Don't jump straight to
+  // "awaiting admin approval" yet, or the assessment step can be skipped.
   await svc.from("users").update({
     identity_doc_type: docType,
-    status: "pending_admin_approval",
+    status: "pending_address_proof",
   }).eq("id", user.id);
 
   await writeAuditLog({ actor_user_id: user.id, action_type: "kyc.documents_uploaded" });
@@ -196,6 +211,9 @@ export async function saveAssessmentAction(_prev: any, formData: FormData) {
     breakdown: score.breakdown,
     algorithm_version: "v1.0",
   });
+
+  // Identity + assessment are both complete now — hand off to admin review.
+  await svc.from("users").update({ status: "pending_admin_approval" }).eq("id", user.id);
 
   await writeAuditLog({ actor_user_id: user.id, action_type: "borrower.assessment_submitted" });
 

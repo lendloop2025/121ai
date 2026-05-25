@@ -9,20 +9,23 @@ export default async function AdminUsersPage() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-bold">Users</h1>
-      <div className="overflow-x-auto bg-[var(--card)] border border-[var(--border)] rounded-xl">
-        <table className="w-full text-sm">
-          <thead className="bg-[var(--bg)] text-left">
-            <tr><th className="p-3">Email</th><th className="p-3">Name</th><th className="p-3">Role</th><th className="p-3">Status</th><th className="p-3">Joined</th></tr>
+      <header>
+        <span className="adm-kicker">Registry</span>
+        <h1 className="mt-1 text-[26px] font-bold tracking-tight">Users</h1>
+      </header>
+      <div className="adm-card overflow-x-auto">
+        <table className="adm-table">
+          <thead>
+            <tr><th>Email</th><th>Name</th><th>Role</th><th>Status</th><th>Joined</th></tr>
           </thead>
           <tbody>
             {users?.map(u => (
-              <tr key={u.id} className="border-t border-[var(--border)]">
-                <td className="p-3">{u.email}</td>
-                <td className="p-3">{u.first_name ?? "—"} {u.last_name ?? ""}</td>
-                <td className="p-3 capitalize">{u.role}</td>
-                <td className="p-3 capitalize">{u.status.replace(/_/g, " ")}</td>
-                <td className="p-3">{formatDate(u.created_at)}</td>
+              <tr key={u.id}>
+                <td className="adm-mono text-[var(--adm-text)]">{u.email}</td>
+                <td>{u.first_name ?? "—"} {u.last_name ?? ""}</td>
+                <td className="capitalize text-[var(--adm-text-muted)]">{u.role}</td>
+                <td><StatusPill status={u.status} /></td>
+                <td className="text-[var(--adm-text-muted)]">{formatDate(u.created_at)}</td>
               </tr>
             ))}
           </tbody>
@@ -30,4 +33,15 @@ export default async function AdminUsersPage() {
       </div>
     </div>
   );
+}
+
+function StatusPill({ status }: { status: string }) {
+  const tone = status === "verified" || status === "active"
+    ? "adm-pill-good"
+    : status.startsWith("pending")
+    ? "adm-pill-warn"
+    : status === "rejected" || status === "suspended"
+    ? "adm-pill-danger"
+    : "";
+  return <span className={`adm-pill ${tone}`}>{status.replace(/_/g, " ")}</span>;
 }

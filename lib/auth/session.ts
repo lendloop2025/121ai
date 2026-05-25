@@ -1,5 +1,6 @@
 import { createServer, createService } from "@/lib/db/client";
 import { redirect } from "next/navigation";
+import { nextStepForStatus } from "@/lib/auth/onboarding";
 
 export async function requireUser() {
   const supabase = await createServer();
@@ -19,7 +20,9 @@ export async function requireUserProfile() {
 
 export async function requireVerified() {
   const { user, profile } = await requireUserProfile();
-  if (profile.status !== "verified") redirect("/onboarding/complete");
+  // Send half-onboarded users to whatever step they're actually on, rather than
+  // dropping everyone on the "Awaiting review" screen.
+  if (profile.status !== "verified") redirect(nextStepForStatus(profile.status));
   return { user, profile };
 }
 

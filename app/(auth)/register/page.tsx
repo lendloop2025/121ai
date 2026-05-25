@@ -10,7 +10,7 @@ function SubmitBtn() {
   return (
     <button
       disabled={pending}
-      className="inline-flex items-center justify-center gap-2 w-full h-12 rounded-[var(--radius-sm)] bg-[var(--brand)] text-[var(--brand-fg)] font-semibold hover:bg-[var(--brand-hover)] transition disabled:opacity-50"
+      className="cb-btn-lime auth-cta w-full disabled:opacity-50"
     >
       {pending ? "Creating account..." : (<>Create account <ArrowRight size={16} /></>)}
     </button>
@@ -20,19 +20,23 @@ function SubmitBtn() {
 export default function RegisterPage() {
   const [state, action] = useActionState(registerAction, { error: "" } as any);
   return (
-    <div className="space-y-8">
+    <div className="auth-stagger space-y-7 relative">
       <div>
-        <h1 className="text-3xl sm:text-[40px] font-bold tracking-tight leading-[1.1]">
-          Create your account
+        <span className="cb-badge">
+          <span className="cb-dot-magenta" />
+          Join the community
+        </span>
+        <h1 className="cb-display mt-5 text-[34px] sm:text-[40px] leading-[1.05] text-[var(--cb-text)]">
+          Create your <span className="cb-shimmer-text">121.ai</span> account
         </h1>
-        <p className="text-[var(--ink-muted)] mt-2">
+        <p className="text-[var(--cb-text-muted)] mt-3 text-sm">
           Open to current NCI students and staff only.
         </p>
       </div>
 
       <form action={action} className="space-y-5">
         <div>
-          <label htmlFor="email">NCI email</label>
+          <label htmlFor="email" className="auth-label">NCI email</label>
           <input
             id="email"
             name="email"
@@ -40,10 +44,11 @@ export default function RegisterPage() {
             autoComplete="email"
             required
             placeholder="x12345678@student.ncirl.ie"
+            className="auth-input"
           />
         </div>
         <div>
-          <label htmlFor="password">Password (min 10 characters)</label>
+          <label htmlFor="password" className="auth-label">Password (min 10 characters)</label>
           <input
             id="password"
             name="password"
@@ -51,10 +56,11 @@ export default function RegisterPage() {
             autoComplete="new-password"
             required
             minLength={10}
+            className="auth-input"
           />
         </div>
 
-        <fieldset className="space-y-3 pt-2">
+        <fieldset className="space-y-3 pt-1">
           <legend className="sr-only">Consents</legend>
           {[
             {
@@ -62,7 +68,7 @@ export default function RegisterPage() {
               label: (
                 <>
                   I agree to the{" "}
-                  <Link href="/terms" className="font-medium text-[var(--brand)] hover:underline">
+                  <Link href="/terms" className="font-medium text-[var(--cb-sky)] hover:underline">
                     Terms of Service
                   </Link>
                   .
@@ -74,7 +80,7 @@ export default function RegisterPage() {
               label: (
                 <>
                   I agree to the{" "}
-                  <Link href="/privacy-policy" className="font-medium text-[var(--brand)] hover:underline">
+                  <Link href="/privacy-policy" className="font-medium text-[var(--cb-sky)] hover:underline">
                     Privacy Policy
                   </Link>
                   .
@@ -90,12 +96,15 @@ export default function RegisterPage() {
               ),
             },
           ].map((c) => (
-            <label key={c.name} className="!mb-0 flex gap-3 items-start text-[var(--ink)] font-normal cursor-pointer">
+            <label
+              key={c.name}
+              className="!mb-0 flex gap-3 items-start text-[var(--cb-text-muted)] font-normal cursor-pointer"
+            >
               <input
                 type="checkbox"
                 name={c.name}
                 required
-                className="mt-1 w-[18px] h-[18px] shrink-0 accent-[var(--brand)]"
+                className="mt-1 w-[18px] h-[18px] shrink-0 accent-[var(--cb-blue)]"
               />
               <span className="text-sm leading-[1.5] flex-1">{c.label}</span>
             </label>
@@ -103,7 +112,7 @@ export default function RegisterPage() {
         </fieldset>
 
         {state?.error && (
-          <p className="text-sm text-[var(--danger)] bg-[color-mix(in_srgb,var(--danger)_8%,transparent)] border border-[color-mix(in_srgb,var(--danger)_30%,transparent)] rounded-[var(--radius-sm)] px-3 py-2">
+          <p className="text-sm text-[#FFB4B0] bg-[rgba(200,48,42,0.15)] border border-[rgba(200,48,42,0.35)] rounded-[var(--radius-sm)] px-3 py-2">
             {state.error}
           </p>
         )}
@@ -111,9 +120,9 @@ export default function RegisterPage() {
         <SubmitBtn />
       </form>
 
-      <p className="text-sm text-[var(--ink-muted)]">
+      <p className="text-sm text-[var(--cb-text-subtle)] text-center">
         Already have an account?{" "}
-        <Link href="/login" className="font-semibold text-[var(--brand)] hover:underline">
+        <Link href="/login" className="font-semibold text-[var(--cb-sky)] hover:underline">
           Sign in
         </Link>
       </p>

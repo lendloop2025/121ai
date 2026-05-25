@@ -10,7 +10,7 @@ function SubmitBtn() {
   return (
     <button
       disabled={pending}
-      className="inline-flex items-center justify-center gap-2 w-full h-12 rounded-[var(--radius-sm)] bg-[var(--brand)] text-[var(--brand-fg)] font-semibold hover:bg-[var(--brand-hover)] transition disabled:opacity-50"
+      className="cb-btn-lime auth-cta w-full disabled:opacity-50"
     >
       {pending ? "Signing in..." : (<>Sign in <ArrowRight size={16} /></>)}
     </button>
@@ -27,29 +27,55 @@ export default function LoginPage() {
   }, [state]);
 
   return (
-    <div className="space-y-8">
+    <div className="auth-stagger space-y-7 relative">
       <div>
-        <h1 className="text-3xl sm:text-[40px] font-bold tracking-tight leading-[1.1]">Welcome back</h1>
-        <p className="text-[var(--ink-muted)] mt-2">Sign in to your 121.ai account.</p>
+        <span className="cb-badge">
+          <span className="cb-dot-magenta" />
+          Welcome back
+        </span>
+        <h1 className="cb-display mt-5 text-[34px] sm:text-[40px] leading-[1.05] text-[var(--cb-text)]">
+          Sign in to <span className="cb-shimmer-text">121.ai</span>
+        </h1>
+        <p className="text-[var(--cb-text-muted)] mt-3 text-sm">
+          Where lenders and borrowers in the NCI community meet.
+        </p>
       </div>
 
       <form action={action} className="space-y-5">
         <div>
-          <label htmlFor="email">NCI email</label>
-          <input id="email" name="email" type="email" autoComplete="email" required placeholder="x12345678@student.ncirl.ie" />
+          <label htmlFor="email" className="auth-label">NCI email</label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            autoComplete="email"
+            required
+            placeholder="x12345678@student.ncirl.ie"
+            className="auth-input"
+          />
         </div>
         <div>
           <div className="flex items-center justify-between mb-1.5">
-            <label className="!mb-0" htmlFor="password">Password</label>
-            <Link href="/forgot-password" className="text-sm font-medium text-[var(--brand)] hover:underline">
+            <label className="auth-label !mb-0" htmlFor="password">Password</label>
+            <Link
+              href="/forgot-password"
+              className="text-xs font-medium text-[var(--cb-sky)] hover:underline"
+            >
               Forgot password?
             </Link>
           </div>
-          <input id="password" name="password" type="password" autoComplete="current-password" required />
+          <input
+            id="password"
+            name="password"
+            type="password"
+            autoComplete="current-password"
+            required
+            className="auth-input"
+          />
         </div>
 
         {state?.error && (
-          <p className="text-sm text-[var(--danger)] bg-[color-mix(in_srgb,var(--danger)_8%,transparent)] border border-[color-mix(in_srgb,var(--danger)_30%,transparent)] rounded-[var(--radius-sm)] px-3 py-2">
+          <p className="text-sm text-[#FFB4B0] bg-[rgba(200,48,42,0.15)] border border-[rgba(200,48,42,0.35)] rounded-[var(--radius-sm)] px-3 py-2">
             {state.error}
           </p>
         )}
@@ -57,12 +83,15 @@ export default function LoginPage() {
         <SubmitBtn />
       </form>
 
-      <p className="text-sm text-[var(--ink-muted)]">
-        New to 121.ai?{" "}
-        <Link href="/register" className="font-semibold text-[var(--brand)] hover:underline">
-          Create an account
-        </Link>
-      </p>
+      <div className="auth-divider">
+        <span className="px-3 cb-mono uppercase tracking-[0.18em] text-[11px] text-[var(--cb-text-subtle)]">
+          New here?
+        </span>
+      </div>
+
+      <Link href="/register" className="cb-btn-ghost auth-cta w-full">
+        Create an account <ArrowRight size={16} />
+      </Link>
     </div>
   );
 }

@@ -63,9 +63,9 @@
         {% set score_css = 'green' if score >= 70 else ('amber' if score >= 40 else 'red') %}
       <div class="borrower-card">
         <div class="card-top">
-          <div class="avatar avatar-{{ score_css }}">{{ r.full_name[0] }}</div>
+          <div class="avatar avatar-{{ score_css }}">#</div>
           <div>
-            <div class="card-name">{{ r.full_name }}</div>
+            <div class="card-name">{{ r.display_name }} #{{ r.borrower_id }}</div>
             <div class="card-meta">
               {{ r.on_time_payments }} on-time ·
               {% if r.defaulted_loans > 0 %}

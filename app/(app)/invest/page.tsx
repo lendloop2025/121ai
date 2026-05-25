@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ArrowRight, Filter } from "lucide-react";
 import { requireVerified } from "@/lib/auth/session";
 import { createService } from "@/lib/db/client";
-import { formatEur } from "@/lib/utils";
+import { formatEur, maskName } from "@/lib/utils";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ScoreBadge } from "@/components/ui/score-badge";
@@ -35,7 +35,7 @@ export default async function InvestPage({ searchParams }: Readonly<{ searchPara
   const totalLent = lenderLoans?.reduce((s, l) => s + l.principal_cents, 0) ?? 0;
 
   let query = svc.from("loan_requests")
-    .select("id, amount_cents, requested_term_months, max_apr_bps, purpose, score_at_request, posted_at, funded_amount_cents")
+    .select("id, borrower_id, amount_cents, requested_term_months, max_apr_bps, purpose, score_at_request, posted_at, funded_amount_cents, users!loan_requests_borrower_id_fkey(first_name, last_name)")
     .eq("community_id", profile.community_id)
     .in("status", ["open", "partially_funded"])
     .neq("borrower_id", user.id)
@@ -100,12 +100,15 @@ export default async function InvestPage({ searchParams }: Readonly<{ searchPara
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {requests.map(r => {
             const fundedPct = Math.min(100, ((r.funded_amount_cents ?? 0) / r.amount_cents) * 100);
+            const u = (r as any).users;
+            const handle = `${maskName(`${u?.first_name ?? ""} ${u?.last_name ?? ""}`.trim())} #${String(r.borrower_id).slice(0, 8)}`;
             return (
               <Link key={r.id} href={`/invest/${r.id}`} className="group">
                 <Card hover padding="md" className="h-full flex flex-col rounded-[var(--radius-lg)]">
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <div className="text-[var(--text-h2)] font-bold tabular text-[var(--ink)] leading-none">{formatEur(r.amount_cents)}</div>
+                      <div className="text-xs text-[var(--ink-subtle)] tabular tracking-wide">{handle}</div>
+                      <div className="text-[var(--text-h2)] font-bold tabular text-[var(--ink)] leading-none mt-1">{formatEur(r.amount_cents)}</div>
                       <div className="text-sm text-[var(--ink)] capitalize mt-2 font-medium">{r.purpose.replaceAll("_", " ")}</div>
                     </div>
                     <ScoreBadge score={r.score_at_request} />

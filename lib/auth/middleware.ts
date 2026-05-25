@@ -1,4 +1,5 @@
 import { createServerClient } from "@supabase/ssr";
+import { createClient } from "@supabase/supabase-js";
 import { NextResponse, type NextRequest } from "next/server";
 
 export async function updateSession(request: NextRequest) {
@@ -35,7 +36,18 @@ export async function updateSession(request: NextRequest) {
   }
 
   if (user && path.startsWith("/admin")) {
-    const { data: profile } = await supabase
+    // Read the role with the service-role client, not the RLS-bound `supabase`
+    // client above. The users_select RLS policy recurses through is_admin()/
+    // community_id() (both read public.users), so an RLS-enforced self-read of
+    // `role` fails with "stack depth limit exceeded" and returns null — which
+    // would bounce even genuine admins to /dashboard. The rest of the app reads
+    // profiles via the service role for the same reason.
+    const service = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      { auth: { autoRefreshToken: false, persistSession: false } }
+    );
+    const { data: profile } = await service
       .from("users").select("role").eq("id", user.id).single();
     if (profile?.role !== "admin") {
       return NextResponse.redirect(new URL("/dashboard", request.url));

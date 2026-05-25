@@ -4,6 +4,26 @@ from utils.db import get_db, query, execute
 from utils.decorators import lender_required
 
 
+_VOWELS = set('AEIOUaeiou')
+
+
+def _mask_name(name):
+    """Anonymize a full name by keeping vowels and replacing other letters with underscores.
+
+    Spaces are preserved so word boundaries stay visible (e.g. "John Smith" -> "_o__ __i__").
+    Non-letter characters other than spaces are dropped.
+    """
+    if not name:
+        return ''
+    out = []
+    for ch in name:
+        if ch == ' ':
+            out.append(' ')
+        elif ch.isalpha():
+            out.append(ch if ch in _VOWELS else '_')
+    return ''.join(out)
+
+
 # ── Dashboard ─────────────────────────────────────────────
 @lender_bp.route('/dashboard')
 @lender_required
@@ -93,6 +113,12 @@ def borrowers():
     sql += ' ORDER BY b.credibility_score DESC'
 
     loan_requests = query(sql, params)
+
+    # Strip PII before handing rows to the template: lenders browsing the list
+    # only see a vowel-masked name plus the borrower id.
+    for row in loan_requests:
+        row['display_name'] = _mask_name(row.pop('full_name', ''))
+
     return render_template('lender/borrowers.html',
                            loan_requests=loan_requests,
                            min_score=min_score, purpose=purpose)

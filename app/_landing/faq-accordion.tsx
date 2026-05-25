@@ -41,7 +41,7 @@ const FAQS: { q: string; a: string }[] = [
 export function FaqAccordion() {
   const [open, setOpen] = useState<number | null>(0);
   return (
-    <div className="divide-y divide-[var(--border)] border-y border-[var(--border)]">
+    <div className="divide-y divide-[var(--cb-border)] border-y border-[var(--cb-border)]">
       {FAQS.map((f, i) => {
         const isOpen = open === i;
         return (
@@ -49,24 +49,29 @@ export function FaqAccordion() {
             <button
               type="button"
               onClick={() => setOpen(isOpen ? null : i)}
-              className="w-full flex items-center justify-between gap-6 py-5 text-left"
+              className="w-full flex items-center justify-between gap-6 py-5 text-left group"
               aria-expanded={isOpen}
             >
-              <span className="font-semibold text-[var(--ink)]">{f.q}</span>
+              <span className="flex items-center gap-4">
+                <span className="cb-mono text-[10px] tracking-[0.2em] text-[var(--cb-lime)]">
+                  /{String(i + 1).padStart(2, "0")}
+                </span>
+                <span className="font-medium text-[var(--cb-text)] text-base">{f.q}</span>
+              </span>
               <ChevronDown
                 size={20}
-                className="shrink-0 text-[var(--ink-subtle)] transition-transform"
+                className="shrink-0 text-[var(--cb-text-subtle)] transition-transform group-hover:text-[var(--cb-lime)]"
                 style={{ transform: isOpen ? "rotate(180deg)" : undefined }}
               />
             </button>
             <div
               className="overflow-hidden transition-all duration-200"
               style={{
-                maxHeight: isOpen ? 280 : 0,
+                maxHeight: isOpen ? 320 : 0,
                 opacity: isOpen ? 1 : 0,
               }}
             >
-              <p className="pb-5 text-[var(--ink-muted)] leading-relaxed">{f.a}</p>
+              <p className="pb-5 pl-12 text-[var(--cb-text-muted)] leading-relaxed">{f.a}</p>
             </div>
           </div>
         );

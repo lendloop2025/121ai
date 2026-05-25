@@ -1,8 +1,18 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { requireUserProfile } from "@/lib/auth/session";
+import { nextStepForStatus } from "@/lib/auth/onboarding";
 
 export default async function CompletePage() {
   const { profile } = await requireUserProfile();
+
+  // Only users who have finished every onboarding step (awaiting admin approval)
+  // or are fully verified belong here. Anyone earlier in the flow is bounced to
+  // the step they still need to complete instead of seeing "Awaiting review".
+  if (profile.status !== "verified" && profile.status !== "pending_admin_approval") {
+    redirect(nextStepForStatus(profile.status));
+  }
+
   const verified = profile.status === "verified";
 
   return (

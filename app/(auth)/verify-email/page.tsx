@@ -1,26 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createServer, createService } from "@/lib/db/client";
-
-// Map a user_status value to the next onboarding screen they should land on.
-function nextStepFor(status: string | null | undefined): string {
-  switch (status) {
-    case "verified":
-      return "/dashboard";
-    case "pending_personal_details":
-      return "/onboarding/personal-details";
-    case "pending_2fa":
-      return "/onboarding/two-factor";
-    case "pending_identity":
-      return "/onboarding/identity";
-    case "pending_address_proof":
-      return "/onboarding/identity";
-    case "pending_admin_approval":
-      return "/onboarding/complete";
-    default:
-      return "/onboarding/personal-details";
-  }
-}
+import { nextStepForStatus } from "@/lib/auth/onboarding";
 
 export default async function VerifyEmailPage({
   searchParams,
@@ -34,42 +15,39 @@ export default async function VerifyEmailPage({
     const svc = createService();
     const { data: profile } = await svc.from("users").select("status").eq("id", user.id).single();
     if (profile?.status && profile.status !== "pending_email_verification") {
-      redirect(nextStepFor(profile.status));
+      redirect(nextStepForStatus(profile.status));
     }
   }
 
   return (
-    <div className="text-center space-y-6 max-w-md mx-auto">
-      <h1 className="text-xl font-bold">Check your inbox</h1>
+    <div className="text-center space-y-6">
+      <span className="cb-badge mx-auto">
+        <span className="cb-dot-magenta" />
+        One last step
+      </span>
+      <h1 className="cb-display text-[32px] leading-[1.05] text-[var(--cb-text)]">
+        Check your <span className="cb-shimmer-text">inbox</span>
+      </h1>
       {sp.sent && (
-        <p className="text-sm text-[var(--ink-muted)]">
+        <p className="text-sm text-[var(--cb-text-muted)]">
           We sent a verification link to your NCI email. Click it to continue setup.
         </p>
       )}
-      <p className="text-xs text-[var(--ink-muted)]">
+      <p className="text-xs text-[var(--cb-text-subtle)]">
         For demo accounts pre-seeded by an admin, this step is skipped.
       </p>
 
       <div className="flex flex-col gap-2 pt-4">
         {user ? (
-          <Link
-            href="/onboarding/personal-details"
-            className="block w-full text-center px-4 py-3 rounded-lg bg-[var(--brand)] text-[var(--brand-fg)] font-semibold"
-          >
+          <Link href="/onboarding/personal-details" className="cb-btn-lime w-full">
             Continue setup →
           </Link>
         ) : (
-          <Link
-            href="/login"
-            className="block w-full text-center px-4 py-3 rounded-lg bg-[var(--brand)] text-[var(--brand-fg)] font-semibold"
-          >
+          <Link href="/login" className="cb-btn-lime w-full">
             Continue to sign in →
           </Link>
         )}
-        <Link
-          href="/"
-          className="block w-full text-center px-4 py-3 rounded-lg border border-[var(--border-strong)] font-semibold hover:border-[var(--brand)]"
-        >
+        <Link href="/" className="cb-btn-ghost w-full">
           Back to home
         </Link>
       </div>

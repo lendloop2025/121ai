@@ -2,13 +2,11 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Menu, X } from "lucide-react";
-import { LinkButton } from "@/components/ui/button";
+import { Menu, X, ArrowRight } from "lucide-react";
 
 const NAV = [
   { href: "#how-it-works", label: "How it works" },
-  { href: "#for-borrowers", label: "For borrowers" },
-  { href: "#for-lenders", label: "For lenders" },
+  { href: "#markets", label: "Markets" },
   { href: "#security", label: "Security" },
   { href: "#faq", label: "FAQ" },
 ];
@@ -19,52 +17,45 @@ export function LandingHeader() {
 
   useEffect(() => {
     function onScroll() {
-      setScrolled(window.scrollY > 80);
+      setScrolled(window.scrollY > 40);
     }
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const onDark = !scrolled;
-
   return (
     <header
       className="fixed top-0 inset-x-0 z-50 transition-colors"
       style={{
         height: 72,
-        background: scrolled ? "rgba(251,250,247,0.92)" : "transparent",
-        backdropFilter: scrolled ? "saturate(180%) blur(12px)" : undefined,
-        WebkitBackdropFilter: scrolled ? "saturate(180%) blur(12px)" : undefined,
-        borderBottom: scrolled ? "1px solid var(--border)" : "1px solid transparent",
-        boxShadow: scrolled ? "var(--shadow-sm)" : "none",
+        background: scrolled ? "rgba(10,10,11,0.75)" : "transparent",
+        backdropFilter: scrolled ? "saturate(160%) blur(14px)" : undefined,
+        WebkitBackdropFilter: scrolled ? "saturate(160%) blur(14px)" : undefined,
+        borderBottom: scrolled
+          ? "1px solid var(--cb-border)"
+          : "1px solid transparent",
       }}
     >
       <div className="max-w-[1280px] mx-auto px-6 lg:px-10 h-full flex items-center justify-between gap-6">
-        <Link href="/" className="flex flex-col leading-none">
-          <span
-            className="font-bold text-[18px]"
-            style={{ color: onDark ? "var(--ink-dark-fg)" : "var(--ink)" }}
-          >
-            121.ai
+        <Link href="/" className="flex items-center gap-2">
+          <span className="w-7 h-7 rounded-md bg-gradient-to-br from-[var(--cb-sky)] to-[var(--cb-blue)] flex items-center justify-center shadow-[0_0_18px_var(--cb-blue-glow)]">
+            <span className="w-2 h-2 rounded-full bg-[#02050F]" />
           </span>
-          <span
-            className="text-[11px] font-medium tracking-wide"
-            style={{ color: onDark ? "rgba(251,250,247,0.55)" : "var(--ink-subtle)" }}
-          >
-            by LendLoop
+          <span className="flex flex-col leading-none">
+            <span className="font-semibold text-[15px] text-[var(--cb-text)]">121.ai</span>
+            <span className="text-[10px] cb-mono tracking-[0.18em] text-[var(--cb-text-subtle)]">
+              BY LENDLOOP
+            </span>
           </span>
         </Link>
 
-        <nav className="hidden lg:flex items-center gap-7 text-sm font-medium">
+        <nav className="hidden lg:flex items-center gap-1 text-sm font-medium">
           {NAV.map((n) => (
             <a
               key={n.href}
               href={n.href}
-              className="transition-colors"
-              style={{
-                color: onDark ? "rgba(251,250,247,0.75)" : "var(--ink-muted)",
-              }}
+              className="px-3 py-2 rounded-full text-[var(--cb-text-muted)] hover:text-[var(--cb-text)] hover:bg-white/5 transition"
             >
               {n.label}
             </a>
@@ -74,22 +65,18 @@ export function LandingHeader() {
         <div className="hidden md:flex items-center gap-2">
           <Link
             href="/login"
-            className="px-4 h-10 inline-flex items-center rounded-[var(--radius-pill)] text-sm font-semibold transition"
-            style={{
-              color: onDark ? "var(--ink-dark-fg)" : "var(--ink)",
-            }}
+            className="px-4 h-10 inline-flex items-center rounded-full text-sm font-medium text-[var(--cb-text-muted)] hover:text-[var(--cb-text)] transition"
           >
             Sign in
           </Link>
-          <LinkButton href="/register" variant="primary" size="sm" pill>
-            Get started
-          </LinkButton>
+          <Link href="/register" className="cb-btn-lime cb-btn-sm">
+            Get started <ArrowRight size={14} />
+          </Link>
         </div>
 
         <button
           aria-label={open ? "Close menu" : "Open menu"}
-          className="md:hidden p-2 rounded-md"
-          style={{ color: onDark ? "var(--ink-dark-fg)" : "var(--ink)" }}
+          className="md:hidden p-2 rounded-md text-[var(--cb-text)]"
           onClick={() => setOpen((v) => !v)}
         >
           {open ? <X size={22} /> : <Menu size={22} />}
@@ -98,7 +85,8 @@ export function LandingHeader() {
 
       {open && (
         <div
-          className="md:hidden border-t border-[var(--border)] bg-[var(--bg)]"
+          className="md:hidden border-t border-[var(--cb-border)]"
+          style={{ background: "rgba(10,10,11,0.95)" }}
           onClick={() => setOpen(false)}
         >
           <div className="px-6 py-4 space-y-2">
@@ -106,18 +94,21 @@ export function LandingHeader() {
               <a
                 key={n.href}
                 href={n.href}
-                className="block py-2 text-sm font-medium text-[var(--ink-muted)]"
+                className="block py-2 text-sm font-medium text-[var(--cb-text-muted)]"
               >
                 {n.label}
               </a>
             ))}
-            <div className="pt-2 flex gap-2">
-              <LinkButton href="/login" variant="outline" size="sm" pill fullWidth>
+            <div className="pt-3 flex gap-2">
+              <Link
+                href="/login"
+                className="cb-btn-ghost cb-btn-sm flex-1"
+              >
                 Sign in
-              </LinkButton>
-              <LinkButton href="/register" variant="primary" size="sm" pill fullWidth>
+              </Link>
+              <Link href="/register" className="cb-btn-lime cb-btn-sm flex-1">
                 Get started
-              </LinkButton>
+              </Link>
             </div>
           </div>
         </div>

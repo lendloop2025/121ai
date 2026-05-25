@@ -17,7 +17,24 @@
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000)",
       "Bash(python3 *)",
       "Bash(stripe config *)",
-      "Bash(curl *)"
+      "Bash(curl *)",
+      "Bash(FLASK_APP=app.py FLASK_DEBUG=1 python3 *)",
+      "Bash(node -e ' *)",
+      "Bash(cd *)",
+      "Bash(PORT=3000 npm run *)",
+      "Bash(node -e \"console.log\\(require\\('./node_modules/@supabase/ssr/package.json'\\).version\\)\")",
+      "Bash(ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 \"Screen Recording 2026-05-25 at 11.51.29 AM.mov\")",
+      "Bash(ffprobe \"Screen Recording 2026-05-25 at 11.51.29 AM.mov\")",
+      "Bash(mkdir -p /tmp/vidframes)",
+      "Bash(ffmpeg -y -i \"Screen Recording 2026-05-25 at 11.51.29 AM.mov\")",
+      "Bash(ffmpeg -y -i \"Screen Recording 2026-05-25 at 11.51.29 AM.mov\" -vf \"fps=2,scale=640:-1\" /tmp/vidframes/f_%03d.png)",
+      "Bash(ffmpeg -y -i \"Screen Recording 2026-05-25 at 11.51.29 AM.mov\" -vf \"fps=2,scale=720:-1\" /tmp/vidframes/f_%03d.png)",
+      "Bash(ffmpeg -y -i \"/Users/akshaysmruti/Downloads/lendloop_smruti_copy/Screen Recording 2026-05-25 at 11.51.29 AM.mov\" -vf \"fps=2,scale=720:-1\" /tmp/vidframes/f_%03d.png)",
+      "Bash(xargs -0 -I{} ffmpeg -y -i \"{}\" -vf \"fps=2,scale=720:-1\" /tmp/vidframes/f_%03d.png)",
+      "Bash(lsof -ti:3000)",
+      "Bash('/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' --headless --disable-gpu --hide-scrollbars --force-device-scale-factor=1 --window-size=1280,800 --screenshot=/tmp/login_shot.png http://localhost:3000/login)",
+      "Bash(break)",
+      "Bash(echo \"=== exit: $? ===\")"
     ]
   }
 }

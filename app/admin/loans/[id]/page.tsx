@@ -11,42 +11,50 @@ export default async function AdminLoanDetailPage({ params }: { params: Promise<
 
   return (
     <div className="max-w-3xl mx-auto space-y-4">
-      <h1 className="text-2xl font-bold">Loan {id.slice(0, 8)}</h1>
-      <div className="p-4 bg-[var(--card)] border border-[var(--border)] rounded-xl">
-        <div className="text-2xl font-bold">{formatEur(loan.principal_cents)}</div>
-        <div className="text-sm">{formatBps(loan.apr_bps)} · {loan.term_months}mo · {formatEur(loan.monthly_payment_cents)}/mo</div>
-        <div className="text-xs text-[var(--muted)] capitalize mt-1">Status: {loan.status.replace(/_/g, " ")}</div>
+      <header>
+        <span className="adm-kicker">Loan dossier</span>
+        <h1 className="mt-1 text-[26px] font-bold tracking-tight adm-mono">Loan {id.slice(0, 8)}</h1>
+      </header>
+
+      <div className="adm-card adm-card-rule p-5">
+        <div className="text-3xl font-bold adm-mono text-[var(--adm-text)]">{formatEur(loan.principal_cents)}</div>
+        <div className="text-sm text-[var(--adm-text-muted)] mt-1">{formatBps(loan.apr_bps)} · {loan.term_months}mo · {formatEur(loan.monthly_payment_cents)}/mo</div>
+        <div className="mt-2"><span className="adm-pill">{loan.status.replace(/_/g, " ")}</span></div>
       </div>
 
-      <div className="p-4 bg-[var(--warning)]/10 border border-[var(--warning)] rounded-xl">
-        <h2 className="font-bold mb-2">Demo helpers</h2>
-        <form action={timeWarpLoanAction} className="flex gap-2 items-end">
+      <div className="adm-card p-5" style={{ borderColor: "rgba(255,179,91,0.35)" }}>
+        <h2 className="adm-kicker mb-3" style={{ color: "var(--adm-amber)" }}>Demo helpers</h2>
+        <form action={timeWarpLoanAction} className="flex flex-wrap gap-3 items-end">
           <input type="hidden" name="loan_id" value={loan.id} />
           <div>
-            <label className="text-xs">Advance time by (months)</label>
-            <input name="months" type="number" min={1} max={12} defaultValue={1} className="!w-24" />
+            <label className="adm-kicker block mb-1.5">Advance time by (months)</label>
+            <input name="months" type="number" min={1} max={12} defaultValue={1} className="adm-input !w-28" />
           </div>
-          <button className="px-3 py-2 rounded-md bg-[var(--warning)] text-white text-sm font-semibold">Time-warp & process repayments</button>
+          <button className="adm-btn-approve" style={{ background: "linear-gradient(180deg, var(--adm-amber), var(--adm-orange))", color: "#1A0A04" }}>
+            Time-warp &amp; process repayments
+          </button>
         </form>
-        <p className="text-xs text-[var(--muted)] mt-2">Backdates the next due date(s) and runs the repayment processor immediately.</p>
+        <p className="text-xs text-[var(--adm-text-subtle)] mt-3">Backdates the next due date(s) and runs the repayment processor immediately.</p>
       </div>
 
-      <h2 className="font-bold">Repayments</h2>
-      <table className="w-full text-sm">
-        <thead className="bg-[var(--bg)] text-left">
-          <tr><th className="p-2">#</th><th className="p-2">Due</th><th className="p-2 text-right">Total</th><th className="p-2 text-right">Status</th></tr>
-        </thead>
-        <tbody>
-          {repayments?.map(r => (
-            <tr key={r.id} className="border-t border-[var(--border)]">
-              <td className="p-2">{r.sequence_number}</td>
-              <td className="p-2">{formatDate(r.due_date)}</td>
-              <td className="p-2 text-right">{formatEur(r.total_due_cents)}</td>
-              <td className="p-2 text-right capitalize">{r.status}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <h2 className="adm-kicker pt-2">Repayments</h2>
+      <div className="adm-card overflow-x-auto">
+        <table className="adm-table">
+          <thead>
+            <tr><th>#</th><th>Due</th><th className="!text-right">Total</th><th className="!text-right">Status</th></tr>
+          </thead>
+          <tbody>
+            {repayments?.map(r => (
+              <tr key={r.id}>
+                <td className="adm-mono">{r.sequence_number}</td>
+                <td className="text-[var(--adm-text-muted)]">{formatDate(r.due_date)}</td>
+                <td className="adm-mono text-right">{formatEur(r.total_due_cents)}</td>
+                <td className="text-right capitalize text-[var(--adm-text-muted)]">{r.status}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

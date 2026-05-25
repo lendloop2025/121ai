@@ -8,19 +8,22 @@ export default async function AuditLogPage() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-bold">Audit log</h1>
-      <div className="overflow-x-auto bg-[var(--card)] border border-[var(--border)] rounded-xl">
-        <table className="w-full text-sm">
-          <thead className="bg-[var(--bg)] text-left">
-            <tr><th className="p-3">When</th><th className="p-3">Action</th><th className="p-3">Resource</th><th className="p-3">Actor IP</th></tr>
+      <header>
+        <span className="adm-kicker">Forensics · last 200 events</span>
+        <h1 className="mt-1 text-[26px] font-bold tracking-tight">Audit log</h1>
+      </header>
+      <div className="adm-card overflow-x-auto">
+        <table className="adm-table">
+          <thead>
+            <tr><th>When</th><th>Action</th><th>Resource</th><th>Actor IP</th></tr>
           </thead>
           <tbody>
             {entries?.map(e => (
-              <tr key={e.id} className="border-t border-[var(--border)]">
-                <td className="p-3 whitespace-nowrap">{formatDate(e.created_at)}</td>
-                <td className="p-3 font-mono">{e.action_type}</td>
-                <td className="p-3 font-mono text-xs">{e.resource_type}/{e.resource_id?.slice(0, 8) ?? "—"}</td>
-                <td className="p-3 text-xs text-[var(--muted)]">{e.actor_ip ?? "—"}</td>
+              <tr key={e.id}>
+                <td className="whitespace-nowrap text-[var(--adm-text-muted)]">{formatDate(e.created_at)}</td>
+                <td className="adm-mono text-[var(--adm-amber)]">{e.action_type}</td>
+                <td className="adm-mono text-xs text-[var(--adm-text-muted)]">{e.resource_type}/{e.resource_id?.slice(0, 8) ?? "—"}</td>
+                <td className="adm-mono text-xs text-[var(--adm-text-subtle)]">{e.actor_ip ?? "—"}</td>
               </tr>
             ))}
           </tbody>

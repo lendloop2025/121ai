@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
-import { startTotpSetupAction, confirmTotpAction } from "@/app/actions/onboarding";
+import { startTotpSetupAction, confirmTotpAction, skipTwoFactorAction } from "@/app/actions/onboarding";
 
 function SubmitBtn() {
   const { pending } = useFormStatus();
@@ -38,6 +38,14 @@ export default function TwoFactorPage() {
             </div>
             {state?.error && <p className="text-sm text-[var(--error)]">{state.error}</p>}
             <SubmitBtn />
+          </form>
+          <form action={skipTwoFactorAction}>
+            <button
+              type="submit"
+              className="w-full py-2.5 text-sm font-medium text-[var(--muted)] hover:text-[var(--fg)] underline underline-offset-4"
+            >
+              Skip for now
+            </button>
           </form>
         </>
       ) : (
