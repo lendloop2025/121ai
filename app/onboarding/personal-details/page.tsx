@@ -5,14 +5,14 @@ import { savePersonalAction } from "@/app/actions/onboarding";
 
 function SubmitBtn() {
   const { pending } = useFormStatus();
-  return <button disabled={pending} className="w-full py-2.5 rounded-lg bg-[var(--primary)] text-[var(--primary-fg)] font-semibold">{pending ? "Saving..." : "Save & continue"}</button>;
+  return <button disabled={pending} className="cb-btn-lime w-full disabled:opacity-50 disabled:cursor-not-allowed">{pending ? "Saving..." : "Save & continue"}</button>;
 }
 
 export default function PersonalDetailsPage() {
   const [state, action] = useActionState(savePersonalAction, { error: "" } as any);
   return (
     <form action={action} className="space-y-4">
-      <h1 className="text-xl font-bold">Tell us about yourself</h1>
+      <h1 className="text-xl font-bold text-[var(--cb-text)]">Tell us about yourself</h1>
 
       <div className="grid grid-cols-2 gap-3">
         <div><label className="text-sm">First name</label><input name="first_name" required /></div>
@@ -42,12 +42,12 @@ export default function PersonalDetailsPage() {
       </div>
       <div><label className="text-sm">Country</label><input name="country" required defaultValue="IE" maxLength={2} /></div>
 
-      <div className="grid grid-cols-2 gap-3 pt-2 border-t border-[var(--border)]">
+      <div className="grid grid-cols-2 gap-3 pt-2 border-t border-[var(--cb-border)]">
         <div><label className="text-sm">NCI program</label><input name="nci_program" required placeholder="MSc Cloud Computing" /></div>
         <div><label className="text-sm">NCI year</label><input name="nci_year" type="number" min={1} max={8} required defaultValue={1} /></div>
       </div>
 
-      {state?.error && <p className="text-sm text-[var(--error)]">{state.error}</p>}
+      {state?.error && <p className="text-sm text-[#FF8A5B]">{state.error}</p>}
       <SubmitBtn />
     </form>
   );

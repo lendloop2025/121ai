@@ -16,8 +16,8 @@ export default function IdentityPage() {
 
   return (
     <form onSubmit={onSubmit} className="space-y-4">
-      <h1 className="text-xl font-bold">Upload identity documents</h1>
-      <p className="text-sm text-[var(--muted)]">An admin will review within minutes. For demo accounts this is pre-approved.</p>
+      <h1 className="text-xl font-bold text-[var(--cb-text)]">Upload identity documents</h1>
+      <p className="text-sm text-[var(--cb-text-muted)]">An admin will review within minutes. For demo accounts this is pre-approved.</p>
 
       <div>
         <label className="text-sm">Document type</label>
@@ -42,8 +42,8 @@ export default function IdentityPage() {
         <input name="selfie" type="file" accept="image/*" required />
       </div>
 
-      {error && <p className="text-sm text-[var(--error)]">{error}</p>}
-      <button disabled={loading} className="w-full py-2.5 rounded-lg bg-[var(--primary)] text-[var(--primary-fg)] font-semibold">
+      {error && <p className="text-sm text-[#FF8A5B]">{error}</p>}
+      <button disabled={loading} className="cb-btn-lime w-full disabled:opacity-50 disabled:cursor-not-allowed">
         {loading ? "Uploading…" : "Submit for review"}
       </button>
     </form>

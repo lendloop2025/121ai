@@ -8,7 +8,7 @@ import { saveAssessmentAction } from "@/app/actions/onboarding";
 function SubmitBtn() {
   const { pending } = useFormStatus();
   return (
-    <button disabled={pending} className="w-full py-2.5 rounded-lg bg-[var(--primary)] text-[var(--primary-fg)] font-semibold">
+    <button disabled={pending} className="cb-btn-lime w-full disabled:opacity-50 disabled:cursor-not-allowed">
       {pending ? "Calculating score..." : "Submit assessment"}
     </button>
   );
@@ -25,8 +25,8 @@ export default function AssessmentPage() {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-xl font-bold mb-1">Borrower assessment</h1>
-        <p className="text-sm text-[var(--muted)]">
+        <h1 className="text-xl font-bold mb-1 text-[var(--cb-text)]">Borrower assessment</h1>
+        <p className="text-sm text-[var(--cb-text-muted)]">
           Tell us about your finances. This generates your initial credit score so the community knows what you can comfortably afford.
         </p>
       </div>
@@ -68,19 +68,19 @@ export default function AssessmentPage() {
           <input name="nci_semesters_completed" type="number" min={0} max={20} defaultValue={2} />
         </div>
 
-        <label className="flex gap-2 items-center text-sm">
+        <label className="flex gap-2 items-center text-sm text-[var(--cb-text-muted)]">
           <input name="has_emergency_fund" type="checkbox" className="w-4" />
           I have an emergency fund (at least one month of expenses saved)
         </label>
 
-        <label className="flex gap-2 items-center text-sm">
+        <label className="flex gap-2 items-center text-sm text-[var(--cb-text-muted)]">
           <input name="has_irp" type="checkbox" className="w-4" />
           I hold an IRP (Irish Residence Permit) or EU passport
         </label>
 
-        {state?.error && <p className="text-sm text-[var(--error)]">{state.error}</p>}
+        {state?.error && <p className="text-sm text-[#FF8A5B]">{state.error}</p>}
         {state?.ok && (
-          <p className="text-sm text-[var(--success)]">
+          <p className="text-sm text-[#4ADE80]">
             ✓ Assessment saved. Initial score: <strong>{state.score}/100</strong>
           </p>
         )}

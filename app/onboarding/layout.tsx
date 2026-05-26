@@ -10,11 +10,14 @@ const steps = [
 
 export default function OnboardingLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen px-4 py-8 bg-[var(--bg)]">
-      <div className="max-w-xl mx-auto">
-        <Link href="/" className="text-2xl font-bold text-[var(--primary)] block text-center mb-6">121.ai</Link>
-        <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-6">
-          <ol className="flex justify-between text-xs text-[var(--muted)] mb-6">
+    <div className="dash-root min-h-screen px-4 py-10 overflow-hidden">
+      <div aria-hidden className="dash-orb dash-orb-blue" style={{ width: 520, height: 520, top: -160, right: -120 }} />
+      <div aria-hidden className="dash-orb dash-orb-cyan" style={{ width: 440, height: 440, bottom: -180, left: -140 }} />
+
+      <div className="relative z-10 max-w-xl mx-auto">
+        <Link href="/" className="cb-display text-2xl font-bold text-[var(--cb-text)] block text-center mb-6">121.ai</Link>
+        <div className="dash-card glass-input p-6 sm:p-7">
+          <ol className="flex justify-between text-xs text-[var(--cb-text-subtle)] mb-6">
             {steps.map((s, i) => (
               <li key={s.path}>{i + 1}. {s.label}</li>
             ))}
