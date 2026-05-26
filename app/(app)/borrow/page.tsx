@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CheckCircle2, AlertTriangle } from "lucide-react";
+import { CheckCircle2, AlertTriangle, ArrowRight, Gauge } from "lucide-react";
 import { requireVerified } from "@/lib/auth/session";
 import { createService } from "@/lib/db/client";
 import {
@@ -8,8 +8,6 @@ import {
   ACTIVE_LOAN_STATUSES,
 } from "@/lib/scoring/limits";
 import { formatEur } from "@/lib/utils";
-import { Card } from "@/components/ui/card";
-import { LinkButton } from "@/components/ui/button";
 import BorrowForm from "./borrow-form";
 
 const OPEN_REQUEST_STATUSES = ["open", "partially_funded"] as const;
@@ -47,66 +45,95 @@ export default async function BorrowPage() {
 
   if (!scoreRow) {
     return (
-      <div className="max-w-lg mx-auto space-y-5">
-        <h1 className="text-3xl font-bold tracking-tight">Request a loan</h1>
-        <Card padding="lg">
-          <p className="text-[var(--ink-muted)]">
-            You need to complete the borrower assessment before requesting a loan.
-          </p>
-          <LinkButton href="/onboarding/assessment" className="mt-5">
-            Complete assessment
-          </LinkButton>
-        </Card>
-      </div>
+      <DarkStage>
+        <div className="max-w-lg mx-auto space-y-5">
+          <header className="space-y-3">
+            <span className="dash-kicker">
+              <span className="inline-block w-1.5 h-1.5 rounded-full bg-[var(--cb-sky)] align-middle mr-2 shadow-[0_0_12px_var(--cb-sky-glow)]" />
+              Borrow
+            </span>
+            <h1 className="cb-display text-[32px] sm:text-[40px] leading-[1.05] text-[var(--cb-text)]">Request a loan</h1>
+          </header>
+          <div className="dash-card p-6 sm:p-7">
+            <p className="text-[var(--cb-text-muted)]">
+              You need to complete the borrower assessment before requesting a loan.
+            </p>
+            <Link href="/onboarding/assessment" className="dash-btn mt-5 inline-flex">
+              Complete assessment <ArrowRight size={16} />
+            </Link>
+          </div>
+        </div>
+      </DarkStage>
     );
   }
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
-      <header>
-        <h1 className="text-3xl sm:text-[40px] font-bold tracking-tight leading-[1.1]">Request a loan</h1>
-        <p className="text-[var(--ink-muted)] mt-2">
-          Once posted, fellow NCI members can offer to fund you. You decide which offer to accept.
-        </p>
-      </header>
+    <DarkStage>
+      <div className="max-w-2xl mx-auto space-y-6">
+        <header className="space-y-2">
+          <span className="dash-kicker">
+            <span className="inline-block w-1.5 h-1.5 rounded-full bg-[var(--cb-sky)] align-middle mr-2 shadow-[0_0_12px_var(--cb-sky-glow)]" />
+            Borrow
+          </span>
+          <h1 className="cb-display text-[32px] sm:text-[44px] font-bold tracking-tight leading-[1.05] text-[var(--cb-text)]">Request a loan</h1>
+          <p className="text-[var(--cb-text-muted)] mt-1">
+            Once posted, fellow NCI members can offer to fund you. You decide which offer to accept.
+          </p>
+        </header>
 
-      {/* Active loans status card */}
-      <ActiveLoansCard active={active} />
+        {/* Active loans status card */}
+        <ActiveLoansCard active={active} />
 
-      {/* Score summary */}
-      <Card padding="md">
-        <div className="flex items-center justify-between gap-4">
-          <div>
-            <div className="text-xs uppercase tracking-[0.12em] text-[var(--ink-subtle)]">Your credit score</div>
-            <div className="mt-1 flex items-baseline gap-3">
-              <span className="text-[32px] font-bold tabular leading-none">{score}</span>
-              <span className="text-[var(--ink-muted)] text-sm">/ 100 · {limit.riskTier}</span>
+        {/* Score summary */}
+        <div className="dash-card p-6">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <div className="dash-kicker flex items-center gap-1.5">
+                <Gauge size={12} className="text-[var(--cb-sky)]" /> Your credit score
+              </div>
+              <div className="mt-2 flex items-baseline gap-3">
+                <span className="text-[32px] font-bold tabular leading-none text-[var(--cb-text)]">{score}</span>
+                <span className="text-[var(--cb-text-muted)] text-sm">/ 100 · {limit.riskTier}</span>
+              </div>
             </div>
-          </div>
-          <div className="text-right">
-            <div className="text-xs uppercase tracking-[0.12em] text-[var(--ink-subtle)]">Maximum amount</div>
-            <div className="mt-1 text-[24px] font-bold tabular text-[var(--brand)]">
-              {limit.eligible ? formatEur(limit.maxAmountCents) : "Not eligible"}
+            <div className="text-right">
+              <div className="dash-kicker">Maximum amount</div>
+              <div className="mt-2 text-[24px] font-bold tabular text-[var(--cb-sky)]">
+                {limit.eligible ? formatEur(limit.maxAmountCents) : "Not eligible"}
+              </div>
             </div>
           </div>
         </div>
-      </Card>
 
-      {atMax ? (
-        <Card padding="md" className="!border-[color-mix(in_srgb,var(--warning)_40%,transparent)] !bg-[color-mix(in_srgb,var(--warning)_8%,transparent)]">
-          <p className="text-sm text-[var(--ink)]">
-            You have reached the maximum of {MAX_ACTIVE_LOANS_PER_BORROWER} active loans.
-            Close an existing loan to request a new one.
-          </p>
-          <Link href="/dashboard" className="inline-block mt-3 text-sm font-semibold text-[var(--brand)] hover:underline">
-            View your loans →
-          </Link>
-        </Card>
-      ) : (
-        <BorrowForm maxAmountEur={limit.maxAmountCents / 100} eligible={limit.eligible} />
-      )}
+        {atMax ? (
+          <div
+            className="dash-card p-6"
+            style={{ borderColor: "rgba(255,138,91,0.35)" }}
+          >
+            <p className="text-sm text-[var(--cb-text)]">
+              You have reached the maximum of {MAX_ACTIVE_LOANS_PER_BORROWER} active loans.
+              Close an existing loan to request a new one.
+            </p>
+            <Link href="/dashboard" className="inline-flex items-center gap-1.5 mt-3 text-sm font-semibold text-[var(--cb-sky)] hover:underline">
+              View your loans <ArrowRight size={15} />
+            </Link>
+          </div>
+        ) : (
+          <BorrowForm maxAmountEur={limit.maxAmountCents / 100} eligible={limit.eligible} />
+        )}
 
-      <YourRequestsSection requests={(myRequests ?? []) as RequestRow[]} loans={(borrowerLoans ?? []) as LoanRow[]} />
+        <YourRequestsSection requests={(myRequests ?? []) as RequestRow[]} loans={(borrowerLoans ?? []) as LoanRow[]} />
+      </div>
+    </DarkStage>
+  );
+}
+
+function DarkStage({ children }: Readonly<{ children: React.ReactNode }>) {
+  return (
+    <div className="dash-root -mx-4 sm:-mx-6 -my-8 sm:-my-10 px-4 sm:px-8 py-8 sm:py-10 overflow-hidden min-h-[calc(100vh-68px)]">
+      <div aria-hidden className="dash-orb dash-orb-blue" style={{ width: 520, height: 520, top: -180, right: -120 }} />
+      <div aria-hidden className="dash-orb dash-orb-cyan" style={{ width: 460, height: 460, bottom: -200, left: -160 }} />
+      <div className="relative z-10">{children}</div>
     </div>
   );
 }
@@ -135,15 +162,15 @@ type LoanRow = {
 function OfferBadge({ pending, total }: Readonly<{ pending: number; total: number }>) {
   if (pending > 0) {
     return (
-      <div className="text-sm font-bold text-[var(--brand)]">
+      <div className="text-sm font-bold text-[var(--cb-sky)]">
         {pending} pending offer{pending === 1 ? "" : "s"}
       </div>
     );
   }
   if (total > 0) {
-    return <div className="text-sm text-[var(--ink-muted)]">No pending offers</div>;
+    return <div className="text-sm text-[var(--cb-text-subtle)]">No pending offers</div>;
   }
-  return <div className="text-sm text-[var(--ink-muted)]">Awaiting offers</div>;
+  return <div className="text-sm text-[var(--cb-text-subtle)]">Awaiting offers</div>;
 }
 
 function YourRequestsSection({ requests, loans }: Readonly<{ requests: RequestRow[]; loans: LoanRow[] }>) {
@@ -156,26 +183,22 @@ function YourRequestsSection({ requests, loans }: Readonly<{ requests: RequestRo
     <section className="space-y-6">
       {open.length > 0 && (
         <div>
-          <h2 className="text-lg font-semibold mb-3">Your open loan requests</h2>
+          <h2 className="text-lg font-semibold mb-3 text-[var(--cb-text)]">Your open loan requests</h2>
           <div className="grid gap-2">
             {open.map(r => {
               const offers = r.loan_offers ?? [];
               const pendingOffers = offers.filter(o => o.status === "pending").length;
               return (
-                <Link
-                  key={r.id}
-                  href={`/borrow/${r.id}`}
-                  className="card-hover flex justify-between items-center p-4 bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius-md)]"
-                >
+                <Link key={r.id} href={`/borrow/${r.id}`} className="dash-txn">
                   <div>
-                    <div className="font-semibold tabular">
+                    <div className="font-semibold tabular text-[var(--cb-text)]">
                       {formatEur(r.amount_cents)} · {r.requested_term_months}mo
                     </div>
-                    <div className="text-sm text-[var(--ink-muted)] capitalize">
+                    <div className="text-sm text-[var(--cb-text-subtle)] capitalize">
                       {r.purpose.replaceAll("_", " ")} · {r.status.replaceAll("_", " ")}
                     </div>
                   </div>
-                  <div className="text-right">
+                  <div className="text-right shrink-0">
                     <OfferBadge pending={pendingOffers} total={offers.length} />
                   </div>
                 </Link>
@@ -187,26 +210,22 @@ function YourRequestsSection({ requests, loans }: Readonly<{ requests: RequestRo
 
       {loans.length > 0 && (
         <div>
-          <h2 className="text-lg font-semibold mb-3">Your loans</h2>
+          <h2 className="text-lg font-semibold mb-3 text-[var(--cb-text)]">Your loans</h2>
           <div className="grid gap-2">
             {loans.map(l => {
               const lender = Array.isArray(l.lender) ? l.lender[0] : l.lender;
               const lenderName = `${lender?.first_name ?? ""} ${lender?.last_name?.[0] ?? ""}.`.trim() || "lender";
               return (
-                <Link
-                  key={l.id}
-                  href={`/loans/${l.id}`}
-                  className="card-hover flex justify-between items-center p-4 bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius-md)]"
-                >
+                <Link key={l.id} href={`/loans/${l.id}`} className="dash-txn">
                   <div className="min-w-0">
-                    <div className="font-semibold tabular">
+                    <div className="font-semibold tabular text-[var(--cb-text)]">
                       {formatEur(l.principal_cents)} · {(l.apr_bps / 100).toFixed(2)}% · {l.term_months}mo
                     </div>
-                    <div className="text-sm text-[var(--ink-muted)]">
+                    <div className="text-sm text-[var(--cb-text-subtle)]">
                       From {lenderName} · <span className="capitalize">{l.status.replaceAll("_", " ")}</span>
                     </div>
                   </div>
-                  <div className="text-sm text-[var(--brand)] font-semibold shrink-0 ml-3">View →</div>
+                  <span className="text-sm text-[var(--cb-sky)] font-semibold shrink-0 ml-3">View →</span>
                 </Link>
               );
             })}
@@ -216,23 +235,19 @@ function YourRequestsSection({ requests, loans }: Readonly<{ requests: RequestRo
 
       {past.length > 0 && (
         <div>
-          <h2 className="text-lg font-semibold mb-3">Previous requests</h2>
+          <h2 className="text-lg font-semibold mb-3 text-[var(--cb-text)]">Previous requests</h2>
           <div className="grid gap-2">
             {past.map(r => (
-              <Link
-                key={r.id}
-                href={`/borrow/${r.id}`}
-                className="card-hover flex justify-between items-center p-4 bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius-md)]"
-              >
+              <Link key={r.id} href={`/borrow/${r.id}`} className="dash-txn">
                 <div>
-                  <div className="font-semibold tabular">
+                  <div className="font-semibold tabular text-[var(--cb-text)]">
                     {formatEur(r.amount_cents)} · {r.requested_term_months}mo
                   </div>
-                  <div className="text-sm text-[var(--ink-muted)] capitalize">
+                  <div className="text-sm text-[var(--cb-text-subtle)] capitalize">
                     {r.purpose.replaceAll("_", " ")} · {r.status.replaceAll("_", " ")}
                   </div>
                 </div>
-                <div className="text-sm text-[var(--ink-muted)] shrink-0 ml-3">View →</div>
+                <span className="text-sm text-[var(--cb-text-subtle)] shrink-0 ml-3">View →</span>
               </Link>
             ))}
           </div>
@@ -245,27 +260,14 @@ function YourRequestsSection({ requests, loans }: Readonly<{ requests: RequestRo
 function ActiveLoansCard({ active }: Readonly<{ active: number }>) {
   const atMax = active >= MAX_ACTIVE_LOANS_PER_BORROWER;
   const tone = atMax
-    ? {
-        bg: "color-mix(in srgb, var(--warning) 8%, transparent)",
-        border: "color-mix(in srgb, var(--warning) 40%, transparent)",
-        Icon: AlertTriangle,
-        iconColor: "var(--warning)",
-      }
-    : {
-        bg: "color-mix(in srgb, var(--success) 8%, transparent)",
-        border: "color-mix(in srgb, var(--success) 35%, transparent)",
-        Icon: CheckCircle2,
-        iconColor: "var(--success)",
-      };
+    ? { color: "#FF8A5B", border: "rgba(255,138,91,0.35)", Icon: AlertTriangle }
+    : { color: "#4ADE80", border: "rgba(74,222,128,0.30)", Icon: CheckCircle2 };
   const { Icon } = tone;
   return (
-    <div
-      className="rounded-[var(--radius-md)] p-5 flex items-center gap-4"
-      style={{ background: tone.bg, border: `1px solid ${tone.border}` }}
-    >
-      <Icon size={22} style={{ color: tone.iconColor }} />
+    <div className="dash-card p-5 flex items-center gap-4" style={{ borderColor: tone.border }}>
+      <Icon size={22} style={{ color: tone.color }} />
       <div className="flex-1">
-        <div className="font-semibold">
+        <div className="font-semibold text-[var(--cb-text)]">
           You have {active} of {MAX_ACTIVE_LOANS_PER_BORROWER} active loans
         </div>
         <div className="mt-2 flex items-center gap-1.5">
@@ -274,7 +276,8 @@ function ActiveLoansCard({ active }: Readonly<{ active: number }>) {
               key={`slot-${i + 1}`}
               className="block w-3 h-3 rounded-full"
               style={{
-                background: i < active ? tone.iconColor : "var(--border-strong)",
+                background: i < active ? tone.color : "var(--cb-border-strong)",
+                boxShadow: i < active ? `0 0 10px ${tone.color}` : "none",
               }}
             />
           ))}
