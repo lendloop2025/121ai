@@ -99,7 +99,7 @@ export function AppShell({
   );
 
   return (
-    <div className="min-h-screen lg:grid lg:grid-cols-[264px_1fr] bg-[var(--bg)]">
+    <div className="min-h-screen lg:grid lg:grid-cols-[264px_1fr] bg-[var(--cb-bg)]">
       {/* ---------- Desktop sidebar ---------- */}
       <aside className="app-sidebar hidden lg:flex flex-col sticky top-0 h-screen p-4 gap-5">
         <div className="px-2 pt-1">{Brand}</div>
@@ -145,7 +145,7 @@ export function AppShell({
       </aside>
 
       {/* ---------- Right column ---------- */}
-      <div className="flex flex-col min-h-screen">
+      <div className="flex flex-col min-h-screen bg-[var(--cb-bg)]">
         {/* Mobile top nav */}
         <header className="app-topbar lg:hidden sticky top-0 z-40 px-4 py-3 flex flex-col gap-3">
           <div className="flex items-center justify-between">
@@ -211,16 +211,16 @@ export function AppShell({
 
         <main className="flex-1 max-w-[1200px] mx-auto w-full px-4 sm:px-6 py-8 sm:py-10">{children}</main>
 
-        <footer className="border-t border-[var(--border)] bg-[var(--surface)]">
-          <div className="max-w-[1200px] mx-auto px-4 sm:px-6 py-6 flex flex-col sm:flex-row gap-3 sm:gap-6 items-center justify-between text-xs text-[var(--ink-muted)]">
+        <footer className="border-t border-[var(--cb-border)] bg-[var(--cb-bg)]">
+          <div className="max-w-[1200px] mx-auto px-4 sm:px-6 py-6 flex flex-col sm:flex-row gap-3 sm:gap-6 items-center justify-between text-xs text-[var(--cb-text-muted)]">
             <div className="flex flex-wrap gap-4 items-center">
               <span className="inline-flex items-center gap-1.5">Stripe-secured</span>
               <span className="inline-flex items-center gap-1.5">GDPR compliant</span>
-              <Link href="/terms" className="hover:text-[var(--ink)]">Terms</Link>
-              <Link href="/privacy-policy" className="hover:text-[var(--ink)]">Privacy</Link>
-              <Link href="/risk-warning" className="hover:text-[var(--ink)]">Risk warning</Link>
+              <Link href="/terms" className="hover:text-[var(--cb-text)]">Terms</Link>
+              <Link href="/privacy-policy" className="hover:text-[var(--cb-text)]">Privacy</Link>
+              <Link href="/risk-warning" className="hover:text-[var(--cb-text)]">Risk warning</Link>
             </div>
-            <div className="text-[11px] text-[var(--ink-subtle)] text-center sm:text-right">
+            <div className="text-[11px] text-[var(--cb-text-subtle)] text-center sm:text-right">
               Capital is at risk. Not protected by deposit insurance. Demo platform.
             </div>
           </div>
