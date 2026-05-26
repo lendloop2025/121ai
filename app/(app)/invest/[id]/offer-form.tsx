@@ -2,7 +2,6 @@
 import { useActionState, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { createOfferAction } from "@/app/actions/lend";
-import { Button } from "@/components/ui/button";
 
 function SubmitBtn({ submitted }: Readonly<{ submitted: boolean }>) {
   const { pending } = useFormStatus();
@@ -10,9 +9,9 @@ function SubmitBtn({ submitted }: Readonly<{ submitted: boolean }>) {
   if (submitted) label = "Offer submitted";
   else if (pending) label = "Submitting...";
   return (
-    <Button type="submit" disabled={pending || submitted} fullWidth size="lg">
+    <button type="submit" disabled={pending || submitted} className="cb-btn-lime w-full disabled:opacity-50 disabled:cursor-not-allowed">
       {label}
-    </Button>
+    </button>
   );
 }
 
@@ -36,55 +35,58 @@ export default function OfferForm({ requestId, maxApr, maxAmount, defaultTerm, w
 
       <div>
         <label htmlFor="amount_eur">
-          Amount you'll lend <span className="text-[var(--fg-subtle)] font-normal">· wallet €{walletEur.toFixed(2)}</span>
+          Amount you'll lend <span className="text-[var(--cb-text-subtle)] font-normal">· wallet €{walletEur.toFixed(2)}</span>
         </label>
         <input
           id="amount_eur" name="amount_eur" type="number"
           min={10} max={maxAmount} step={1} required
           value={amount}
           onChange={e => setAmount(Number(e.target.value))}
+          className="cb-mono"
         />
       </div>
 
       <div>
-        <label htmlFor="apr_pct">Your APR <span className="text-[var(--fg-subtle)] font-normal">· max {maxApr.toFixed(2)}%</span></label>
+        <label htmlFor="apr_pct">Your APR <span className="text-[var(--cb-text-subtle)] font-normal">· max {maxApr.toFixed(2)}%</span></label>
         <input
           id="apr_pct" name="apr_pct" type="number"
           min={1} max={maxApr} step={0.1} required
           value={apr}
           onChange={e => setApr(Number(e.target.value))}
+          className="cb-mono"
         />
       </div>
 
       <div>
-        <label htmlFor="term_months">Term <span className="text-[var(--fg-subtle)] font-normal">· max {defaultTerm} months</span></label>
+        <label htmlFor="term_months">Term <span className="text-[var(--cb-text-subtle)] font-normal">· max {defaultTerm} months</span></label>
         <input
           id="term_months" name="term_months" type="number"
           min={1} max={defaultTerm} required
           value={term}
           onChange={e => setTerm(Number(e.target.value))}
+          className="cb-mono"
         />
       </div>
 
       <div>
-        <label htmlFor="message">Message to borrower <span className="text-[var(--fg-subtle)] font-normal">· optional</span></label>
+        <label htmlFor="message">Message to borrower <span className="text-[var(--cb-text-subtle)] font-normal">· optional</span></label>
         <textarea id="message" name="message" maxLength={500} rows={3} placeholder="Best of luck with your studies!" />
       </div>
 
-      <div className="rounded-[var(--radius-sm)] bg-[var(--bg-subtle)] p-3 text-sm space-y-1">
+      <div className="rounded-[14px] border border-[var(--cb-border)] bg-white/[0.03] p-3 text-sm space-y-1">
         <div className="flex justify-between">
-          <span className="text-[var(--fg-muted)]">Monthly repayment</span>
-          <span className="font-semibold tabular">€{monthly.toFixed(2)}</span>
+          <span className="text-[var(--cb-text-muted)]">Monthly repayment</span>
+          <span className="font-semibold tabular text-[var(--cb-text)]">€{monthly.toFixed(2)}</span>
         </div>
         <div className="flex justify-between">
-          <span className="text-[var(--fg-muted)]">Total return</span>
-          <span className="font-semibold tabular text-[var(--primary)]">€{totalReturn.toFixed(2)}</span>
+          <span className="text-[var(--cb-text-muted)]">Total return</span>
+          <span className="font-semibold tabular text-[#4ADE80]">€{totalReturn.toFixed(2)}</span>
         </div>
       </div>
 
-      {state?.error && <p className="text-sm text-[var(--danger)]">{state.error}</p>}
+      {state?.error && <p className="text-sm text-[#FF8A5B]">{state.error}</p>}
       {state?.ok && (
-        <p className="text-sm text-[var(--primary)]">
+        <p className="text-sm text-[#4ADE80]">
           ✓ Offer submitted. The borrower has been notified. Reload the page to send a different offer.
         </p>
       )}

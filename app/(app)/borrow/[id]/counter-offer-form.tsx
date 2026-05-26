@@ -10,7 +10,7 @@ function Submit() {
     <button
       type="submit"
       disabled={pending}
-      className="px-3 py-1.5 rounded-md bg-[var(--brand)] text-[var(--brand-fg)] text-sm font-semibold disabled:opacity-50"
+      className="dash-btn !h-9 !px-4 text-sm disabled:opacity-50"
     >
       {pending ? "Sending…" : "Send counter"}
     </button>
@@ -47,7 +47,7 @@ export default function CounterOfferForm({
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="px-3 py-1.5 rounded-md border border-[var(--border-strong)] text-sm font-semibold hover:border-[var(--brand)]"
+        className="dash-btn-ghost !h-9 !px-4 text-sm"
       >
         Counter offer
       </button>
@@ -56,38 +56,38 @@ export default function CounterOfferForm({
 
   if (state?.ok) {
     return (
-      <span className="text-sm text-[var(--success)] font-semibold">
+      <span className="text-sm text-[#4ADE80] font-semibold">
         Counter sent — waiting on lender
       </span>
     );
   }
 
   return (
-    <form action={action} className="space-y-2 mt-3 p-3 bg-[var(--bg-alt)] rounded-md w-full">
+    <form action={action} className="glass-input space-y-2 mt-3 p-3 rounded-xl w-full border border-[var(--cb-border)] bg-white/[0.03]">
       <input type="hidden" name="offer_id" value={offerId} />
       <div className="grid grid-cols-3 gap-2">
         <label className="text-xs">
-          <span className="text-[var(--ink-muted)]">Amount (€)</span>
+          <span className="text-[var(--cb-text-subtle)]">Amount (€)</span>
           <input
             name="amount_eur" type="number" step="1" min="10" max={maxAmountEur}
             defaultValue={defaultAmountEur}
-            className="w-full mt-1 px-2 py-1.5 border border-[var(--border-strong)] rounded text-sm"
+            className="!h-9 !px-2 mt-1 cb-mono text-sm"
           />
         </label>
         <label className="text-xs">
-          <span className="text-[var(--ink-muted)]">APR (%)</span>
+          <span className="text-[var(--cb-text-subtle)]">APR (%)</span>
           <input
             name="apr_pct" type="number" step="0.1" min="1" max={maxAprPct}
             defaultValue={defaultAprPct}
-            className="w-full mt-1 px-2 py-1.5 border border-[var(--border-strong)] rounded text-sm"
+            className="!h-9 !px-2 mt-1 cb-mono text-sm"
           />
         </label>
         <label className="text-xs">
-          <span className="text-[var(--ink-muted)]">Term (mo)</span>
+          <span className="text-[var(--cb-text-subtle)]">Term (mo)</span>
           <input
             name="term_months" type="number" step="1" min="1" max="12"
             defaultValue={defaultTermMonths}
-            className="w-full mt-1 px-2 py-1.5 border border-[var(--border-strong)] rounded text-sm"
+            className="!h-9 !px-2 mt-1 cb-mono text-sm"
           />
         </label>
       </div>
@@ -95,15 +95,15 @@ export default function CounterOfferForm({
         name="message"
         placeholder="Optional note to the lender"
         maxLength={500}
-        className="w-full px-2 py-1.5 border border-[var(--border-strong)] rounded text-sm"
+        className="!px-2 !py-1.5 text-sm"
         rows={2}
       />
-      {state?.error && <p className="text-xs text-[var(--danger)]">{state.error}</p>}
+      {state?.error && <p className="text-xs text-[#FF8A5B]">{state.error}</p>}
       <div className="flex gap-2 justify-end">
         <button
           type="button"
           onClick={() => setOpen(false)}
-          className="px-3 py-1.5 rounded-md text-sm text-[var(--ink-muted)]"
+          className="px-3 py-1.5 rounded-md text-sm text-[var(--cb-text-muted)] hover:text-[var(--cb-text)]"
         >
           Cancel
         </button>

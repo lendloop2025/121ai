@@ -14,6 +14,16 @@ const NOTICES: Record<string, string> = {
   already_countered: "You have already sent a counter-offer for that lender's offer. Waiting on the lender to respond.",
 };
 
+function DarkStage({ children }: Readonly<{ children: React.ReactNode }>) {
+  return (
+    <div className="dash-root -mx-4 sm:-mx-6 -my-8 sm:-my-10 px-4 sm:px-8 py-8 sm:py-10 overflow-hidden min-h-[calc(100vh-68px)]">
+      <div aria-hidden className="dash-orb dash-orb-blue" style={{ width: 520, height: 520, top: -180, right: -120 }} />
+      <div aria-hidden className="dash-orb dash-orb-cyan" style={{ width: 460, height: 460, bottom: -200, left: -160 }} />
+      <div className="relative z-10">{children}</div>
+    </div>
+  );
+}
+
 export default async function LoanRequestDetailPage({
   params,
   searchParams,
@@ -29,7 +39,11 @@ export default async function LoanRequestDetailPage({
 
   const { data: req } = await svc.from("loan_requests").select("*").eq("id", id).single();
   if (!req || req.borrower_id !== user.id) {
-    return <p className="text-sm text-[var(--danger)]">Request not found.</p>;
+    return (
+      <DarkStage>
+        <p className="text-sm text-[#FF8A5B]">Request not found.</p>
+      </DarkStage>
+    );
   }
   const { data: offers } = await svc.from("loan_offers")
     .select("*, lender:users!loan_offers_lender_id_fkey(first_name, last_name)")
@@ -42,84 +56,83 @@ export default async function LoanRequestDetailPage({
   );
 
   return (
-    <div className="max-w-2xl mx-auto space-y-4">
-      <h1 className="text-2xl font-bold">Your loan request</h1>
-      {noticeMessage && (
-        <div className="p-3 bg-[var(--brand-soft)] border border-[var(--brand)] rounded-md text-sm text-[var(--brand)]">
-          {noticeMessage}
+    <DarkStage>
+      <div className="max-w-2xl mx-auto space-y-4">
+        <h1 className="cb-display text-[28px] sm:text-[34px] font-bold text-[var(--cb-text)]">Your loan request</h1>
+        {noticeMessage && (
+          <div className="dash-card p-3.5 text-sm text-[var(--cb-sky)]" style={{ borderColor: "var(--cb-border-strong)" }}>
+            {noticeMessage}
+          </div>
+        )}
+        <div className="dash-card p-5">
+          <div className="text-2xl font-bold tabular text-[var(--cb-text)]">{formatEur(req.amount_cents)}</div>
+          <div className="text-sm text-[var(--cb-text-muted)] capitalize">
+            {req.purpose.replace(/_/g, " ")} · {req.requested_term_months} months · ≤{formatBps(req.max_apr_bps)} APR
+          </div>
+          <div className="text-xs text-[var(--cb-text-subtle)] mt-2">
+            Status: <span className="font-semibold capitalize text-[var(--cb-text-muted)]">{req.status.replace(/_/g, " ")}</span>
+          </div>
         </div>
-      )}
-      <div className="p-4 bg-[var(--surface)] border border-[var(--border)] rounded-xl">
-        <div className="text-2xl font-bold">{formatEur(req.amount_cents)}</div>
-        <div className="text-sm text-[var(--ink-muted)] capitalize">
-          {req.purpose.replace(/_/g, " ")} · {req.requested_term_months} months · ≤{formatBps(req.max_apr_bps)} APR
-        </div>
-        <div className="text-xs text-[var(--ink-muted)] mt-2">
-          Status: <span className="font-semibold capitalize">{req.status.replace(/_/g, " ")}</span>
-        </div>
-      </div>
 
-      <h2 className="font-bold">Offers received ({offers?.length ?? 0})</h2>
-      <div className="space-y-2">
-        {offers?.length ? offers.map((o: any) => {
-          const isCounterFromBorrower = o.proposed_by_borrower === true;
-          const wasSuperseded = counteredIds.has(o.id);
-          return (
-            <div
-              key={o.id}
-              className="p-4 bg-[var(--surface)] border border-[var(--border)] rounded-xl"
-            >
-              <div className="flex justify-between items-start gap-3">
-                <div className="min-w-0">
-                  <div className="font-semibold">
-                    {isCounterFromBorrower
-                      ? "Your counter-offer"
-                      : `${o.lender?.first_name ?? "Anonymous"} ${o.lender?.last_name?.[0] ?? ""}.`}
+        <h2 className="font-bold text-[var(--cb-text)]">Offers received ({offers?.length ?? 0})</h2>
+        <div className="space-y-2">
+          {offers?.length ? offers.map((o: any) => {
+            const isCounterFromBorrower = o.proposed_by_borrower === true;
+            const wasSuperseded = counteredIds.has(o.id);
+            return (
+              <div key={o.id} className="dash-card p-4">
+                <div className="flex justify-between items-start gap-3">
+                  <div className="min-w-0">
+                    <div className="font-semibold text-[var(--cb-text)]">
+                      {isCounterFromBorrower
+                        ? "Your counter-offer"
+                        : `${o.lender?.first_name ?? "Anonymous"} ${o.lender?.last_name?.[0] ?? ""}.`}
+                    </div>
+                    <div className="text-sm tabular text-[var(--cb-text-muted)]">
+                      {formatEur(o.amount_cents)} at {formatBps(o.apr_bps)} APR · {o.term_months}mo
+                    </div>
+                    {o.message_to_borrower && (
+                      <div className="text-xs italic text-[var(--cb-text-subtle)] mt-1">"{o.message_to_borrower}"</div>
+                    )}
                   </div>
-                  <div className="text-sm">
-                    {formatEur(o.amount_cents)} at {formatBps(o.apr_bps)} APR · {o.term_months}mo
+                  <div className="flex flex-col items-end gap-2 shrink-0">
+                    {o.status === "pending" && !isCounterFromBorrower && !wasSuperseded && (
+                      <>
+                        <form action={acceptOfferAction}>
+                          <input type="hidden" name="offer_id" value={o.id} />
+                          <button className="dash-btn !h-9 !px-4 text-sm">
+                            Accept
+                          </button>
+                        </form>
+                        <CounterOfferForm
+                          offerId={o.id}
+                          defaultAmountEur={Math.round(o.amount_cents / 100)}
+                          defaultAprPct={Math.round(o.apr_bps) / 100}
+                          defaultTermMonths={o.term_months}
+                          maxAmountEur={Math.round(req.amount_cents / 100)}
+                          maxAprPct={Math.round(req.max_apr_bps) / 100}
+                        />
+                      </>
+                    )}
+                    {o.status === "pending" && isCounterFromBorrower && (
+                      <span className="text-sm text-[var(--cb-sky)] font-semibold">
+                        Counter sent — waiting on lender
+                      </span>
+                    )}
+                    {wasSuperseded && o.status !== "accepted" && (
+                      <span className="text-sm text-[var(--cb-text-subtle)]">Superseded by your counter</span>
+                    )}
+                    {o.status === "accepted" && <span className="text-sm font-semibold text-[#4ADE80]">Accepted</span>}
+                    {o.status === "rejected" && !wasSuperseded && (
+                      <span className="text-sm text-[var(--cb-text-subtle)]">Rejected</span>
+                    )}
                   </div>
-                  {o.message_to_borrower && (
-                    <div className="text-xs italic text-[var(--ink-muted)] mt-1">"{o.message_to_borrower}"</div>
-                  )}
-                </div>
-                <div className="flex flex-col items-end gap-2 shrink-0">
-                  {o.status === "pending" && !isCounterFromBorrower && !wasSuperseded && (
-                    <>
-                      <form action={acceptOfferAction}>
-                        <input type="hidden" name="offer_id" value={o.id} />
-                        <button className="px-3 py-1.5 rounded-md bg-[var(--brand)] text-[var(--brand-fg)] text-sm font-semibold">
-                          Accept
-                        </button>
-                      </form>
-                      <CounterOfferForm
-                        offerId={o.id}
-                        defaultAmountEur={Math.round(o.amount_cents / 100)}
-                        defaultAprPct={Math.round(o.apr_bps) / 100}
-                        defaultTermMonths={o.term_months}
-                        maxAmountEur={Math.round(req.amount_cents / 100)}
-                        maxAprPct={Math.round(req.max_apr_bps) / 100}
-                      />
-                    </>
-                  )}
-                  {o.status === "pending" && isCounterFromBorrower && (
-                    <span className="text-sm text-[var(--brand)] font-semibold">
-                      Counter sent — waiting on lender
-                    </span>
-                  )}
-                  {wasSuperseded && o.status !== "accepted" && (
-                    <span className="text-sm text-[var(--ink-subtle)]">Superseded by your counter</span>
-                  )}
-                  {o.status === "accepted" && <span className="text-sm text-[var(--success)]">Accepted</span>}
-                  {o.status === "rejected" && !wasSuperseded && (
-                    <span className="text-sm text-[var(--ink-muted)]">Rejected</span>
-                  )}
                 </div>
               </div>
-            </div>
-          );
-        }) : <p className="text-sm text-[var(--ink-muted)]">Offers will appear here as lenders submit them.</p>}
+            );
+          }) : <p className="text-sm text-[var(--cb-text-muted)]">Offers will appear here as lenders submit them.</p>}
+        </div>
       </div>
-    </div>
+    </DarkStage>
   );
 }
