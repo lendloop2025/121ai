@@ -25,11 +25,11 @@ export default function EarlyPayoffButton({ loanId, totalEur }: { loanId: string
       <input type="hidden" name="loan_id" value={loanId} />
       <button
         disabled={pending}
-        className="w-full py-2.5 rounded-lg bg-[var(--primary)] text-[var(--primary-fg)] font-semibold disabled:opacity-50"
+        className="cb-btn-lime w-full disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {pending ? "Processing..." : `Pay off €${totalEur} now`}
       </button>
-      {err && <p className="text-sm text-[var(--error)] mt-2">{err}</p>}
+      {err && <p className="text-sm text-[#FF8A5B] mt-2">{err}</p>}
     </form>
   );
 }

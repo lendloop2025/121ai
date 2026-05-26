@@ -7,11 +7,11 @@ const ACTIVE_STATUSES = ["pending_signature", "pending_disbursement", "active", 
 const CLOSED_STATUSES = ["paid_off", "written_off"];
 
 function statusTone(status: string): string {
-  if (status === "active") return "text-[var(--success)]";
-  if (status === "paid_off") return "text-[var(--ink-muted)]";
-  if (status === "in_default" || status === "written_off") return "text-[var(--danger)]";
-  if (status === "in_grace") return "text-[var(--warning)]";
-  return "text-[var(--brand)]";
+  if (status === "active") return "text-[#4ADE80]";
+  if (status === "paid_off") return "text-[var(--cb-text-subtle)]";
+  if (status === "in_default" || status === "written_off") return "text-[#FF8A5B]";
+  if (status === "in_grace") return "text-[#FACC15]";
+  return "text-[var(--cb-sky)]";
 }
 
 export default async function LoansIndexPage() {
@@ -54,20 +54,16 @@ export default async function LoansIndexPage() {
     const progress = progressByLoan.get(l.id);
     const totalRepayment = l.principal_cents + (l.total_interest_cents ?? 0);
     return (
-      <Link
-        key={l.id}
-        href={`/loans/${l.id}`}
-        className="card-hover block p-4 bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius-md)]"
-      >
+      <Link key={l.id} href={`/loans/${l.id}`} className="dash-card dash-card-hover block p-4">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <div className="text-xs uppercase tracking-wide text-[var(--ink-subtle)]">
+            <div className="dash-kicker">
               {isBorrower ? "Borrowing from" : "Lending to"} {counterName}
             </div>
-            <div className="text-lg font-bold tabular mt-0.5">
+            <div className="text-lg font-bold tabular mt-0.5 text-[var(--cb-text)]">
               {formatEur(l.principal_cents)} · {formatBps(l.apr_bps)} · {l.term_months}mo
             </div>
-            <div className="text-sm text-[var(--ink-muted)] mt-0.5">
+            <div className="text-sm text-[var(--cb-text-muted)] mt-0.5">
               {formatEur(l.monthly_payment_cents)} per month · total {formatEur(totalRepayment)}
             </div>
           </div>
@@ -76,7 +72,7 @@ export default async function LoansIndexPage() {
               {l.status.replaceAll("_", " ")}
             </div>
             {progress && (
-              <div className="text-xs text-[var(--ink-muted)] mt-0.5 tabular">
+              <div className="text-xs text-[var(--cb-text-subtle)] mt-0.5 tabular">
                 {progress.paid}/{progress.total} paid
               </div>
             )}
@@ -84,18 +80,18 @@ export default async function LoansIndexPage() {
         </div>
         <div className="mt-3 grid grid-cols-3 gap-2 text-xs">
           <div>
-            <div className="text-[var(--ink-subtle)] uppercase tracking-wide">Disbursed</div>
-            <div className="tabular mt-0.5">{l.disbursed_at ? formatDate(l.disbursed_at) : "—"}</div>
+            <div className="dash-kicker">Disbursed</div>
+            <div className="tabular mt-0.5 text-[var(--cb-text-muted)]">{l.disbursed_at ? formatDate(l.disbursed_at) : "—"}</div>
           </div>
           <div>
-            <div className="text-[var(--ink-subtle)] uppercase tracking-wide">Next due</div>
-            <div className="tabular mt-0.5">
+            <div className="dash-kicker">Next due</div>
+            <div className="tabular mt-0.5 text-[var(--cb-text-muted)]">
               {l.status === "paid_off" ? "—" : (l.first_payment_due_at ? formatDate(l.first_payment_due_at) : "—")}
             </div>
           </div>
           <div>
-            <div className="text-[var(--ink-subtle)] uppercase tracking-wide">Paid off</div>
-            <div className="tabular mt-0.5">{l.paid_off_at ? formatDate(l.paid_off_at) : "—"}</div>
+            <div className="dash-kicker">Paid off</div>
+            <div className="tabular mt-0.5 text-[var(--cb-text-muted)]">{l.paid_off_at ? formatDate(l.paid_off_at) : "—"}</div>
           </div>
         </div>
       </Link>
@@ -103,29 +99,38 @@ export default async function LoansIndexPage() {
   };
 
   return (
-    <div className="space-y-8 max-w-3xl">
-      <header className="space-y-1">
-        <h1 className="text-3xl sm:text-[40px] font-bold tracking-tight leading-[1.1]">Your loans</h1>
-        <p className="text-[var(--ink-muted)]">All loans you have borrowed or funded — active and past.</p>
-      </header>
+    <div className="dash-root -mx-4 sm:-mx-6 -my-8 sm:-my-10 px-4 sm:px-8 py-8 sm:py-10 overflow-hidden min-h-[calc(100vh-68px)]">
+      <div aria-hidden className="dash-orb dash-orb-blue" style={{ width: 520, height: 520, top: -180, right: -120 }} />
+      <div aria-hidden className="dash-orb dash-orb-cyan" style={{ width: 460, height: 460, bottom: -200, left: -160 }} />
 
-      <section>
-        <h2 className="text-lg font-semibold mb-3">Active ({active.length})</h2>
-        {active.length > 0 ? (
-          <div className="grid gap-2">{active.map(renderRow)}</div>
-        ) : (
-          <p className="text-sm text-[var(--ink-muted)]">No active loans right now.</p>
-        )}
-      </section>
+      <div className="relative z-10 space-y-8 max-w-3xl">
+        <header className="space-y-1">
+          <span className="dash-kicker">
+            <span className="inline-block w-1.5 h-1.5 rounded-full bg-[var(--cb-sky)] align-middle mr-2 shadow-[0_0_12px_var(--cb-sky-glow)]" />
+            Loans
+          </span>
+          <h1 className="cb-display text-[32px] sm:text-[44px] font-bold tracking-tight leading-[1.05] text-[var(--cb-text)]">Your loans</h1>
+          <p className="text-[var(--cb-text-muted)]">All loans you have borrowed or funded — active and past.</p>
+        </header>
 
-      <section>
-        <h2 className="text-lg font-semibold mb-3">Previous ({closed.length})</h2>
-        {closed.length > 0 ? (
-          <div className="grid gap-2">{closed.map(renderRow)}</div>
-        ) : (
-          <p className="text-sm text-[var(--ink-muted)]">No previous loans yet.</p>
-        )}
-      </section>
+        <section>
+          <h2 className="text-lg font-semibold mb-3 text-[var(--cb-text)]">Active ({active.length})</h2>
+          {active.length > 0 ? (
+            <div className="grid gap-2">{active.map(renderRow)}</div>
+          ) : (
+            <p className="text-sm text-[var(--cb-text-muted)]">No active loans right now.</p>
+          )}
+        </section>
+
+        <section>
+          <h2 className="text-lg font-semibold mb-3 text-[var(--cb-text)]">Previous ({closed.length})</h2>
+          {closed.length > 0 ? (
+            <div className="grid gap-2">{closed.map(renderRow)}</div>
+          ) : (
+            <p className="text-sm text-[var(--cb-text-muted)]">No previous loans yet.</p>
+          )}
+        </section>
+      </div>
     </div>
   );
 }
